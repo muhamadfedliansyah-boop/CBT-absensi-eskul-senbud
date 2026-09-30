@@ -84,6 +84,25 @@ Route::middleware('auth')->group(function () {
 
         // Rekapitulasi & Laporan Presensi Lengkap
         Route::get('/rekapitulasi', [AdminController::class, 'rekapitulasiIndex'])->name('rekap.index');
+
+        // ===== IMPORT DATA DARI EXCEL =====
+        Route::post('/import/students', [AdminController::class, 'importStudents'])->name('import.students');
+        Route::post('/import/users', [AdminController::class, 'importUsers'])->name('import.users');
+        Route::post('/import/eskuls', [AdminController::class, 'importEskuls'])->name('import.eskuls');
+
+        // ===== EXPORT LAPORAN KE EXCEL =====
+        Route::get('/export/attendance', [AdminController::class, 'exportAttendance'])->name('export.attendance');
+        Route::get('/export/students', [AdminController::class, 'exportStudents'])->name('export.students');
+
+        // ===== SINKRONISASI GOOGLE SPREADSHEET (GFORM) =====
+        Route::post('/sync/google-sheet', [AdminController::class, 'syncGoogleSheet'])->name('sync.google-sheet');
+
+        // ===== GALERI FOTO KEGIATAN =====
+        Route::get('/galeri', [AdminController::class, 'galeriIndex'])->name('galeri.index');
+        Route::get('/galeri/{schedule_id}', [AdminController::class, 'galeriDetail'])->name('galeri.detail');
+
+        // ===== DETEKSI JADWAL BENTROK =====
+        Route::get('/clash-detection', [AdminController::class, 'clashDetection'])->name('clash.index');
     });
 
     // ------------------------------------------
@@ -108,11 +127,12 @@ Route::middleware('auth')->group(function () {
     });
 
     // ------------------------------------------
-    // C. Role: PEMBIMBING SISWA (PS) RAYON
+    // C. Role: PEMBIMBING SISWA (PS) / GURU / LABORAN
     // ------------------------------------------
-    Route::middleware('role:ps,pembimbing siswa,admin')->prefix('ps')->name('ps.')->group(function () {
+    Route::middleware('role:ps,pembimbing,guru,laboran,admin')->prefix('ps')->name('ps.')->group(function () {
         // Pantau Kehadiran Siswa Rayon Bimbingan
         Route::get('/monitoring-rayon', [PSController::class, 'monitoringRayon'])->name('rayon.monitoring');
+        Route::get('/rayon', [PSController::class, 'monitoringRayon'])->name('rayon.index');
 
         // Input & Validasi Dispensasi / Izin Siswa
         Route::get('/dispensasi', [PSController::class, 'dispensasiIndex'])->name('dispensasi.index');
@@ -123,3 +143,6 @@ Route::middleware('auth')->group(function () {
     });
 
 });
+
+// ===== 4. WEBHOOK GOOGLE FORM / SPREADSHEET (APPS SCRIPT) =====
+Route::post('/api/gform/webhook', [AdminController::class, 'gformWebhook']);

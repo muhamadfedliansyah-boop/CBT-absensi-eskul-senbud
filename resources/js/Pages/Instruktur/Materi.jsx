@@ -3,14 +3,17 @@ import { Head, useForm, Link } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
 export default function Materi({ schedule }) {
-    const { data, setData, post, processing } = useForm({
+    const { data, setData, post, processing, errors } = useForm({
         material_text: schedule.material_text || '',
-        activity_photo: null,
+        location: schedule.location || '',
+        photo: null,
     });
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post(`/instruktur/materi/${schedule.id}`);
+        post(`/instruktur/jadwal/materi/${schedule.id}`, {
+            forceFormData: true,
+        });
     };
 
     return (
@@ -33,6 +36,18 @@ export default function Materi({ schedule }) {
                 <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs">
                     <form onSubmit={handleSubmit} className="space-y-4 text-xs">
                         <div>
+                            <label className="font-bold text-slate-700">Lokasi Kegiatan</label>
+                            <input
+                                type="text"
+                                value={data.location}
+                                onChange={(e) => setData('location', e.target.value)}
+                                placeholder="Contoh: Lapangan Utama, Lab Komputer 2, Aula..."
+                                className="w-full mt-1.5 px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500/20"
+                            />
+                            {errors.location && <p className="text-rose-500 mt-1">{errors.location}</p>}
+                        </div>
+
+                        <div>
                             <label className="font-bold text-slate-700">Ringkasan Materi / Topik Pembelajaran</label>
                             <textarea
                                 rows={5}
@@ -41,30 +56,39 @@ export default function Materi({ schedule }) {
                                 placeholder="Tuliskan materi yang diajarkan pada pertemuan ini..."
                                 className="w-full mt-1.5 p-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500/20"
                             ></textarea>
+                            {errors.material_text && <p className="text-rose-500 mt-1">{errors.material_text}</p>}
                         </div>
 
                         <div>
                             <label className="font-bold text-slate-700">Foto Dokumentasi Kegiatan</label>
+                            <p className="text-[10px] text-slate-400 mb-1.5">Format: JPG, PNG, WebP — Maks. 2MB</p>
                             <input
                                 type="file"
-                                accept="image/*"
-                                onChange={(e) => setData('activity_photo', e.target.files[0])}
-                                className="w-full mt-1.5 p-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs file:mr-3 file:py-1 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100"
+                                accept="image/jpeg,image/png,image/jpg,image/webp"
+                                onChange={(e) => setData('photo', e.target.files[0])}
+                                className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs file:mr-3 file:py-1 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100"
                             />
+                            {errors.photo && <p className="text-rose-500 mt-1">{errors.photo}</p>}
                         </div>
 
-                        {schedule.activity_photo_url && (
+                        {schedule.photo_url && (
                             <div className="pt-2">
-                                <div className="text-xs font-bold text-slate-600 mb-1">Foto Sebelumnya:</div>
+                                <div className="text-xs font-bold text-slate-600 mb-1.5">Foto Sebelumnya:</div>
                                 <img
-                                    src={schedule.activity_photo_url}
-                                    alt="Dokumentasi"
-                                    className="h-36 rounded-2xl object-cover border border-slate-200"
+                                    src={schedule.photo_url}
+                                    alt="Dokumentasi Kegiatan"
+                                    className="h-40 w-full object-cover rounded-2xl border border-slate-200"
                                 />
                             </div>
                         )}
 
-                        <div className="pt-4 flex justify-end">
+                        <div className="pt-4 flex justify-end gap-3">
+                            <Link
+                                href="/instruktur/my-eskul"
+                                className="px-5 py-2.5 border border-slate-200 text-slate-600 rounded-xl font-bold hover:bg-slate-50 transition-all"
+                            >
+                                Batal
+                            </Link>
                             <button
                                 type="submit"
                                 disabled={processing}

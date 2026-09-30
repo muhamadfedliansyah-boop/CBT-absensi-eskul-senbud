@@ -21,6 +21,8 @@ class User extends Authenticatable
         'role_id',
     ];
 
+    protected $with = ['role'];
+
     protected $hidden = [
         'password',
         'remember_token',
@@ -86,13 +88,18 @@ class User extends Authenticatable
 
         $userRole = strtolower(trim($this->role->name));
 
-        if (is_string($roles)) {
-            $roles = explode(',', $roles);
+        $targetRoles = [];
+        $rawList = is_array($roles) ? $roles : explode(',', (string) $roles);
+        foreach ($rawList as $item) {
+            if (is_string($item)) {
+                foreach (explode(',', $item) as $subItem) {
+                    $targetRoles[] = strtolower(trim($subItem));
+                }
+            }
         }
 
-        foreach ($roles as $r) {
-            $targetRole = strtolower(trim($r));
-            if ($userRole === $targetRole || str_contains($userRole, $targetRole)) {
+        foreach ($targetRoles as $target) {
+            if ($target !== '' && ($userRole === $target || str_contains($userRole, $target) || str_contains($target, $userRole))) {
                 return true;
             }
         }
@@ -112,6 +119,6 @@ class User extends Authenticatable
 
     public function isPS(): bool
     {
-        return $this->hasRole(['ps', 'pembimbing siswa']);
+        return $this->hasRole(['ps', 'pembimbing', 'guru', 'laboran']);
     }
 }

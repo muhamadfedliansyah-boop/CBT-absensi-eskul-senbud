@@ -37,7 +37,7 @@ class InstrukturController extends Controller
         // Security check: ensure current user is instructor of this eskul or admin
         $user = Auth::user();
         if (!$user->isAdmin() && $schedule->eskul->instruktur_id !== $user->id) {
-            abort(403, 'Anda tidak memiliki akses ke jadwal eskul ini.');
+            abort(403, 'Akses Ditolak. Anda hanya dapat mengabsen siswa pada cabang eskul & seni budaya yang Anda ajar.');
         }
 
         $students = $schedule->eskul->students;
@@ -55,7 +55,7 @@ class InstrukturController extends Controller
         $user = Auth::user();
 
         if (!$user->isAdmin() && $schedule->eskul->instruktur_id !== $user->id) {
-            abort(403, 'Akses Ditolak.');
+            abort(403, 'Akses Ditolak. Anda hanya dapat mengabsen siswa pada cabang eskul & seni budaya yang Anda ajar.');
         }
 
         $validated = $request->validate([
@@ -87,6 +87,11 @@ class InstrukturController extends Controller
     public function materiEdit($schedule_id)
     {
         $schedule = Schedule::with(['eskul', 'sanggaRooms.sangga'])->findOrFail($schedule_id);
+        $user = Auth::user();
+        if (!$user->isAdmin() && $schedule->eskul->instruktur_id !== $user->id) {
+            abort(403, 'Akses Ditolak. Anda hanya dapat mengubah materi pada eskul yang Anda ajar.');
+        }
+
         return Inertia::render('Instruktur/Materi', compact('schedule'));
     }
 
@@ -95,7 +100,11 @@ class InstrukturController extends Controller
      */
     public function materiUpdate(Request $request, $schedule_id)
     {
-        $schedule = Schedule::findOrFail($schedule_id);
+        $schedule = Schedule::with('eskul')->findOrFail($schedule_id);
+        $user = Auth::user();
+        if (!$user->isAdmin() && $schedule->eskul->instruktur_id !== $user->id) {
+            abort(403, 'Akses Ditolak. Anda hanya dapat mengubah materi pada eskul yang Anda ajar.');
+        }
 
         $validated = $request->validate([
             'material_text' => 'nullable|string',
@@ -118,6 +127,11 @@ class InstrukturController extends Controller
     public function sanggaIndex($eskul_id)
     {
         $eskul = Eskul::with(['sanggas.members.rayon', 'sanggas.picStudent', 'schedules'])->findOrFail($eskul_id);
+        $user = Auth::user();
+        if (!$user->isAdmin() && $eskul->instruktur_id !== $user->id) {
+            abort(403, 'Akses Ditolak. Anda hanya dapat mengelola sangga pada eskul yang Anda ajar.');
+        }
+
         return Inertia::render('Instruktur/Sangga', compact('eskul'));
     }
 
@@ -126,6 +140,12 @@ class InstrukturController extends Controller
      */
     public function sanggaStore(Request $request, $eskul_id)
     {
+        $eskul = Eskul::findOrFail($eskul_id);
+        $user = Auth::user();
+        if (!$user->isAdmin() && $eskul->instruktur_id !== $user->id) {
+            abort(403, 'Akses Ditolak. Anda hanya dapat mengelola sangga pada eskul yang Anda ajar.');
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:100',
             'pic_student_id' => 'required|exists:students,id',

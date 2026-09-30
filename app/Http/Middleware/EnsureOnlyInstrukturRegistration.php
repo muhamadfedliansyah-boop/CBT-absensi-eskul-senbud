@@ -20,7 +20,7 @@ class EnsureOnlyInstrukturRegistration
         if ($request->isMethod('post')) {
             // OWASP: Strip any attempts to pass unauthorized role_id
             $roleInput = $request->input('role_id') ?? $request->input('role');
-            if ($roleInput && !in_array($roleInput, [3, '3', 'instruktur', 'Instruktur'])) {
+            if ($roleInput && !in_array($roleInput, [3, '3', 'admin', 'instruktur','guru', 'pembimbing'])) {
                 abort(403, 'Akses Ditolak: Registrasi mandiri hanya diperbolehkan untuk Peran Instruktur / Guru Pembina.');
             }
 

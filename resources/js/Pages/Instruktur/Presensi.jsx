@@ -6,7 +6,8 @@ export default function PresensiInput({ schedule, students = [], attendances = {
     // Initial attendance state map
     const initialAttendance = {};
     students.forEach((st) => {
-        const existing = attendances[st.id] || {};
+        // JSON keys from PHP keyBy() are strings, so use String(st.id)
+        const existing = attendances[String(st.id)] || attendances[st.id] || {};
         initialAttendance[st.id] = {
             status: existing.status || 'HADIR',
             notes: existing.notes || '',

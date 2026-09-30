@@ -52,7 +52,7 @@ export default function MyEskul({ myEskuls = [] }) {
                                                         Input Absen
                                                     </Link>
                                                     <Link
-                                                        href={`/instruktur/materi/${sch.id}`}
+                                                        href={`/instruktur/jadwal/materi/${sch.id}`}
                                                         className="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs transition-all"
                                                         title="Materi & Dokumentasi"
                                                     >

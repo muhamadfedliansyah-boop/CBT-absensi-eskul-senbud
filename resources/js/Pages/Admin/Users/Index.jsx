@@ -1,10 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Head, useForm, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
 export default function UsersIndex({ users = [], roles = [] }) {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
+    const importFileRef = useRef(null);
+
+    const handleImportExcel = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const formData = new FormData();
+        formData.append('file', file);
+        router.post('/admin/import/users', formData, {
+            forceFormData: true,
+            onFinish: () => { if (importFileRef.current) importFileRef.current.value = ''; },
+        });
+    };
 
     const createForm = useForm({
         name: '',
@@ -68,13 +80,23 @@ export default function UsersIndex({ users = [], roles = [] }) {
                         <h2 className="text-xl font-black text-slate-900">Manajemen Pengguna & Hak Akses</h2>
                         <p className="text-xs text-slate-500">Kelola akun admin, verifikasi instruktur baru, dan pembimbing siswa.</p>
                     </div>
-                    <button
-                        onClick={() => setIsCreateModalOpen(true)}
-                        className="px-4 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-xs shrink-0"
-                    >
-                        <i className="bi bi-person-plus-fill"></i>
-                        <span>Tambah Pengguna</span>
-                    </button>
+                    <div className="flex items-center gap-2">
+                        <input type="file" ref={importFileRef} onChange={handleImportExcel} accept=".xlsx,.xls,.csv" className="hidden" />
+                        <button
+                            onClick={() => importFileRef.current?.click()}
+                            className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-xs shrink-0"
+                        >
+                            <i className="bi bi-file-earmark-spreadsheet"></i>
+                            <span>Import Excel</span>
+                        </button>
+                        <button
+                            onClick={() => setIsCreateModalOpen(true)}
+                            className="px-4 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-xs shrink-0"
+                        >
+                            <i className="bi bi-person-plus-fill"></i>
+                            <span>Tambah Pengguna</span>
+                        </button>
+                    </div>
                 </div>
 
                 <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs">

@@ -20,13 +20,22 @@ export default function RekapIndex({
                         <h2 className="text-xl font-black text-slate-900">Rekapitulasi Kehadiran & Laporan Global</h2>
                         <p className="text-xs text-slate-500">Statistik transparansi absensi eskul semester genap.</p>
                     </div>
-                    <button
-                        onClick={() => window.print()}
-                        className="px-4 py-2.5 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-xs shrink-0"
-                    >
-                        <i className="bi bi-printer-fill"></i>
-                        <span>Cetak Laporan</span>
-                    </button>
+                    <div className="flex items-center gap-2">
+                        <a
+                            href="/admin/export/attendance"
+                            className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-xs shrink-0"
+                        >
+                            <i className="bi bi-file-earmark-spreadsheet"></i>
+                            <span>Export ke Excel</span>
+                        </a>
+                        <button
+                            onClick={() => window.print()}
+                            className="px-4 py-2.5 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-xs shrink-0"
+                        >
+                            <i className="bi bi-printer-fill"></i>
+                            <span>Cetak Laporan</span>
+                        </button>
+                    </div>
                 </div>
 
                 {/* KPI Metrics */}
@@ -59,7 +68,7 @@ export default function RekapIndex({
                                 </div>
                                 <div className="flex justify-between text-xs text-slate-600">
                                     <span>Instruktur: {eskul.instruktur?.name || '-'}</span>
-                                    <span className="font-bold">{eskul.students?.length || 0} Peserta</span>
+                                    <span className="font-bold">{eskul.students_count ?? eskul.students?.length ?? 0} Peserta</span>
                                 </div>
                             </div>
                         ))}
