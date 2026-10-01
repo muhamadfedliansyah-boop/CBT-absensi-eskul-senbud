@@ -80,6 +80,7 @@ Route::middleware('auth')->group(function () {
         // Kelola Jadwal Global & Alokasi Ruangan
         Route::get('/schedules', [AdminController::class, 'scheduleIndex'])->name('schedules.index');
         Route::post('/schedules', [AdminController::class, 'scheduleStore'])->name('schedules.store');
+        Route::put('/schedules/{schedule}', [AdminController::class, 'scheduleUpdate'])->name('schedules.update');
         Route::delete('/schedules/{schedule}', [AdminController::class, 'scheduleDestroy'])->name('schedules.destroy');
 
         // Rekapitulasi & Laporan Presensi Lengkap
@@ -89,10 +90,12 @@ Route::middleware('auth')->group(function () {
         Route::post('/import/students', [AdminController::class, 'importStudents'])->name('import.students');
         Route::post('/import/users', [AdminController::class, 'importUsers'])->name('import.users');
         Route::post('/import/eskuls', [AdminController::class, 'importEskuls'])->name('import.eskuls');
+        Route::post('/import/schedules', [AdminController::class, 'importSchedules'])->name('import.schedules');
 
         // ===== EXPORT LAPORAN KE EXCEL =====
         Route::get('/export/attendance', [AdminController::class, 'exportAttendance'])->name('export.attendance');
         Route::get('/export/students', [AdminController::class, 'exportStudents'])->name('export.students');
+        Route::get('/export/schedules', [AdminController::class, 'exportSchedules'])->name('export.schedules');
 
         // ===== SINKRONISASI GOOGLE SPREADSHEET (GFORM) =====
         Route::post('/sync/google-sheet', [AdminController::class, 'syncGoogleSheet'])->name('sync.google-sheet');
@@ -115,6 +118,12 @@ Route::middleware('auth')->group(function () {
         // Input & Rekam Presensi Siswa per Pertemuan
         Route::get('/presensi/{schedule_id}', [InstrukturController::class, 'presensiIndex'])->name('presensi.input');
         Route::post('/presensi/{schedule_id}', [InstrukturController::class, 'presensiStore'])->name('presensi.store');
+
+        // Galeri & Library Foto Dokumentasi Kegiatan Instruktur
+        Route::get('/galeri', [InstrukturController::class, 'galeriIndex'])->name('galeri');
+
+        // Rekapitulasi Presensi & Persentase Kehadiran
+        Route::get('/rekap', [InstrukturController::class, 'rekapIndex'])->name('rekap');
 
         // Unggah Materi Pertemuan & Foto Kegiatan
         Route::get('/jadwal/materi/{schedule_id}', [InstrukturController::class, 'materiEdit'])->name('materi.edit');

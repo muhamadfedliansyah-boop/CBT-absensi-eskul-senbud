@@ -48,10 +48,11 @@ class DashboardController extends Controller
         // 2. Instruktur Eskul & Senbud Overview
         if ($user->isInstruktur()) {
             $myEskuls = Eskul::where('instruktur_id', $user->id)
-                ->with(['students', 'schedules' => fn($q) => $q->orderBy('activity_date', 'asc')])
+                ->with(['students.rayon', 'schedules' => fn($q) => $q->orderBy('activity_date', 'asc')->with('attendances')])
                 ->get();
+            
             $mySchedules = Schedule::whereIn('eskul_id', $myEskuls->pluck('id'))
-                ->with('eskul')
+                ->with(['eskul', 'attendances'])
                 ->orderBy('activity_date', 'desc')
                 ->take(10)
                 ->get();
@@ -63,7 +64,31 @@ class DashboardController extends Controller
             $allScheduleIds = Schedule::whereIn('eskul_id', $myEskuls->pluck('id'))->pluck('id');
             $totalPresensi = Attendance::whereIn('schedule_id', $allScheduleIds)->count();
             $hadirCount = Attendance::whereIn('schedule_id', $allScheduleIds)->where('status', 'HADIR')->count();
+            $sakitCount = Attendance::whereIn('schedule_id', $allScheduleIds)->where('status', 'SAKIT')->count();
+            $izinCount = Attendance::whereIn('schedule_id', $allScheduleIds)->where('status', 'IZIN')->count();
+            $alpaCount = Attendance::whereIn('schedule_id', $allScheduleIds)->where('status', 'ALPA')->count();
+            $dispenCount = Attendance::whereIn('schedule_id', $allScheduleIds)->where('status', 'DISPEN')->count();
+            
             $avgAttendance = $totalPresensi > 0 ? round(($hadirCount / $totalPresensi) * 100, 1) : 0;
+            $totalPhotos = Schedule::whereIn('eskul_id', $myEskuls->pluck('id'))->whereNotNull('photo_url')->count();
+
+            // Progress kehadiran & dokumentasi per eskul
+            $eskulStats = $myEskuls->map(function ($eskul) {
+                $schIds = $eskul->schedules->pluck('id');
+                $totalAtt = Attendance::whereIn('schedule_id', $schIds)->count();
+                $hadir = Attendance::whereIn('schedule_id', $schIds)->where('status', 'HADIR')->count();
+                $rate = $totalAtt > 0 ? round(($hadir / $totalAtt) * 100, 1) : 0;
+                $photoCount = $eskul->schedules->whereNotNull('photo_url')->count();
+                return [
+                    'id' => $eskul->id,
+                    'name' => $eskul->name,
+                    'type' => $eskul->type,
+                    'students_count' => $eskul->students->count(),
+                    'schedules_count' => $eskul->schedules->count(),
+                    'attendance_rate' => $rate,
+                    'photos_count' => $photoCount,
+                ];
+            });
 
             return Inertia::render('Dashboard/Instruktur', [
                 'myEskuls' => $myEskuls,
@@ -72,6 +97,16 @@ class DashboardController extends Controller
                 'totalStudentsCount' => $totalStudentsInEskul,
                 'averageAttendance' => $avgAttendance,
                 'sessionsThisWeek' => count($allScheduleIds) . ' Sesi',
+                'totalPhotos' => $totalPhotos,
+                'stats' => [
+                    'hadir' => $hadirCount,
+                    'sakit' => $sakitCount,
+                    'izin' => $izinCount,
+                    'alpa' => $alpaCount,
+                    'dispen' => $dispenCount,
+                    'total' => $totalPresensi,
+                ],
+                'eskulStats' => $eskulStats,
             ]);
         }
 

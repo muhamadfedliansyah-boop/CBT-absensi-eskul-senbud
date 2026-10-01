@@ -39,10 +39,17 @@ export default function AuthenticatedLayout({ children, title = 'SIBAS Dashboard
     };
 
     const navLinkClass = (path) =>
-        `flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs transition-all ${
+        `group flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs transition-all ${
             isActive(path)
                 ? 'bg-[#0077b6] text-white font-bold shadow-md shadow-sky-900/40'
                 : 'text-slate-300 hover:text-white hover:bg-white/5 font-medium'
+        }`;
+
+    const iconClass = (path) =>
+        `text-sm transition-colors ${
+            isActive(path)
+                ? 'text-white'
+                : 'text-slate-400 group-hover:text-sky-400'
         }`;
 
     return (
@@ -147,7 +154,7 @@ export default function AuthenticatedLayout({ children, title = 'SIBAS Dashboard
                                 <div>
                                     <div className="px-3 py-1 text-[10px] font-black text-slate-400 tracking-wider uppercase">DASHBOARD</div>
                                     <Link href="/dashboard" prefetch className={navLinkClass('/dashboard')}>
-                                        <i className="bi bi-grid-fill"></i>
+                                        <i className={`bi bi-grid-fill ${iconClass('/dashboard')}`}></i>
                                         <span>Dashboard Ringkasan</span>
                                     </Link>
                                 </div>
@@ -156,23 +163,23 @@ export default function AuthenticatedLayout({ children, title = 'SIBAS Dashboard
                                     <div className="px-3 py-1 text-[10px] font-black text-slate-400 tracking-wider uppercase">DATA MASTER</div>
                                     <div className="space-y-1">
                                         <Link href="/admin/eskul" prefetch className={navLinkClass('/admin/eskul')}>
-                                            <i className="bi bi-palette-fill text-slate-400"></i>
+                                            <i className={`bi bi-palette-fill ${iconClass('/admin/eskul')}`}></i>
                                             <span>Ekstrakurikuler</span>
                                         </Link>
                                         <Link href="/admin/students" prefetch className={navLinkClass('/admin/students')}>
-                                            <i className="bi bi-mortarboard-fill text-slate-400"></i>
+                                            <i className={`bi bi-mortarboard-fill ${iconClass('/admin/students')}`}></i>
                                             <span>Data Siswa</span>
                                         </Link>
                                         <Link href="/admin/rayons" prefetch className={navLinkClass('/admin/rayons')}>
-                                            <i className="bi bi-geo-alt-fill text-slate-400"></i>
+                                            <i className={`bi bi-geo-alt-fill ${iconClass('/admin/rayons')}`}></i>
                                             <span>Rayon & Pembimbing</span>
                                         </Link>
                                         <Link href="/admin/users" prefetch className={navLinkClass('/admin/users')}>
-                                            <i className="bi bi-person-badge-fill text-slate-400"></i>
+                                            <i className={`bi bi-person-badge-fill ${iconClass('/admin/users')}`}></i>
                                             <span>Pegawai & Pengguna</span>
                                         </Link>
                                         <Link href="/admin/schedules" prefetch className={navLinkClass('/admin/schedules')}>
-                                            <i className="bi bi-calendar3 text-slate-400"></i>
+                                            <i className={`bi bi-calendar3 ${iconClass('/admin/schedules')}`}></i>
                                             <span>Jadwal & Ruangan</span>
                                         </Link>
                                     </div>
@@ -182,15 +189,15 @@ export default function AuthenticatedLayout({ children, title = 'SIBAS Dashboard
                                     <div className="px-3 py-1 text-[10px] font-black text-slate-400 tracking-wider uppercase">PEMANTAUAN & LAPORAN</div>
                                     <div className="space-y-1">
                                         <Link href="/admin/galeri" prefetch className={navLinkClass('/admin/galeri')}>
-                                            <i className="bi bi-images text-purple-400"></i>
+                                            <i className={`bi bi-images ${iconClass('/admin/galeri')}`}></i>
                                             <span>Galeri Foto Kegiatan</span>
                                         </Link>
                                         <Link href="/admin/clash-detection" prefetch className={navLinkClass('/admin/clash-detection')}>
-                                            <i className="bi bi-exclamation-triangle-fill text-amber-400"></i>
+                                            <i className={`bi bi-exclamation-triangle-fill ${iconClass('/admin/clash-detection')}`}></i>
                                             <span>Peringatan Bentrok</span>
                                         </Link>
                                         <Link href="/admin/rekapitulasi" prefetch className={navLinkClass('/admin/rekapitulasi')}>
-                                            <i className="bi bi-file-earmark-spreadsheet-fill text-emerald-400"></i>
+                                            <i className={`bi bi-file-earmark-spreadsheet-fill ${iconClass('/admin/rekapitulasi')}`}></i>
                                             <span>Rekap & Export Absensi</span>
                                         </Link>
                                     </div>
@@ -206,7 +213,7 @@ export default function AuthenticatedLayout({ children, title = 'SIBAS Dashboard
                                 <div>
                                     <div className="px-3 py-1 text-[10px] font-black text-slate-400 tracking-wider uppercase">DASHBOARD</div>
                                     <Link href="/dashboard" prefetch className={navLinkClass('/dashboard')}>
-                                        <i className="bi bi-grid-fill"></i>
+                                        <i className={`bi bi-grid-fill ${iconClass('/dashboard')}`}></i>
                                         <span>Dashboard Pembimbing</span>
                                     </Link>
                                 </div>
@@ -215,15 +222,15 @@ export default function AuthenticatedLayout({ children, title = 'SIBAS Dashboard
                                     <div className="px-3 py-1 text-[10px] font-black text-slate-400 tracking-wider uppercase">MONITORING & DISPENSASI</div>
                                     <div className="space-y-1">
                                         <Link href="/ps/monitoring-rayon" prefetch className={navLinkClass('/ps/monitoring-rayon')}>
-                                            <i className="bi bi-people-fill text-sky-400"></i>
+                                            <i className={`bi bi-people-fill ${iconClass('/ps/monitoring-rayon')}`}></i>
                                             <span>Monitoring Siswa Rayon</span>
                                         </Link>
                                         <Link href="/ps/dispensasi" prefetch className={navLinkClass('/ps/dispensasi')}>
-                                            <i className="bi bi-file-earmark-medical-fill text-emerald-400"></i>
+                                            <i className={`bi bi-file-earmark-medical-fill ${iconClass('/ps/dispensasi')}`}></i>
                                             <span>Dispensasi & Izin</span>
                                         </Link>
                                         <Link href="/ps/laporan" prefetch className={navLinkClass('/ps/laporan')}>
-                                            <i className="bi bi-calendar3-range-fill text-amber-400"></i>
+                                            <i className={`bi bi-calendar3-range-fill ${iconClass('/ps/laporan')}`}></i>
                                             <span>Laporan Keaktifan</span>
                                         </Link>
                                     </div>
@@ -239,7 +246,7 @@ export default function AuthenticatedLayout({ children, title = 'SIBAS Dashboard
                                 <div>
                                     <div className="px-3 py-1 text-[10px] font-black text-slate-400 tracking-wider uppercase">DASHBOARD</div>
                                     <Link href="/dashboard" prefetch className={navLinkClass('/dashboard')}>
-                                        <i className="bi bi-grid-fill"></i>
+                                        <i className={`bi bi-grid-fill ${iconClass('/dashboard')}`}></i>
                                         <span>Dashboard Instruktur</span>
                                     </Link>
                                 </div>
@@ -248,8 +255,16 @@ export default function AuthenticatedLayout({ children, title = 'SIBAS Dashboard
                                     <div className="px-3 py-1 text-[10px] font-black text-slate-400 tracking-wider uppercase">KEGIATAN & PRESENSI</div>
                                     <div className="space-y-1">
                                         <Link href="/instruktur/my-eskul" prefetch className={navLinkClass('/instruktur/my-eskul')}>
-                                            <i className="bi bi-award-fill text-sky-400"></i>
-                                            <span>Ekstrakurikuler Saya</span>
+                                            <i className={`bi bi-award-fill ${iconClass('/instruktur/my-eskul')}`}></i>
+                                            <span>Ekstrakurikuler & Sesi</span>
+                                        </Link>
+                                        <Link href="/instruktur/galeri" prefetch className={navLinkClass('/instruktur/galeri')}>
+                                            <i className={`bi bi-images ${iconClass('/instruktur/galeri')}`}></i>
+                                            <span>Galeri & Lib Foto</span>
+                                        </Link>
+                                        <Link href="/instruktur/rekap" prefetch className={navLinkClass('/instruktur/rekap')}>
+                                            <i className={`bi bi-file-earmark-spreadsheet-fill ${iconClass('/instruktur/rekap')}`}></i>
+                                            <span>Rekap Kehadiran Siswa</span>
                                         </Link>
                                     </div>
                                 </div>

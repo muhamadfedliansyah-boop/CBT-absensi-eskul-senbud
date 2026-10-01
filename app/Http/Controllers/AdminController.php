@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Exports\AttendanceExport;
+use App\Exports\SchedulesExport;
 use App\Exports\StudentsExport;
 use App\Imports\EskulsImport;
+use App\Imports\SchedulesImport;
 use App\Imports\StudentsImport;
 use App\Imports\UsersImport;
 use App\Models\Attendance;
@@ -311,8 +313,10 @@ class AdminController extends Controller
     // =========================================================
     public function scheduleIndex()
     {
-        $schedules = Schedule::with(['eskul', 'sanggaRooms.sangga'])->orderBy('activity_date', 'desc')->paginate(20);
-        $eskuls = Eskul::all();
+        $schedules = Schedule::with(['eskul.instruktur', 'attendances', 'sanggaRooms.sangga'])
+            ->orderBy('activity_date', 'desc')
+            ->get();
+        $eskuls = Eskul::with(['instruktur'])->withCount('students')->get();
         return Inertia::render('Admin/Schedules/Index', compact('schedules', 'eskuls'));
     }
 
@@ -328,7 +332,22 @@ class AdminController extends Controller
         ]);
 
         Schedule::create($validated);
-        return back()->with('success', 'Jadwal kegiatan berhasil ditambahkan.');
+        return back()->with('success', 'Jadwal kegiatan berhasil ditambahkan. Instruktur pengampu kini dapat mulai mengabsenkan siswa pada sesi tersebut.');
+    }
+
+    public function scheduleUpdate(Request $request, Schedule $schedule)
+    {
+        $validated = $request->validate([
+            'eskul_id' => 'required|exists:eskuls,id',
+            'activity_date' => 'required|date',
+            'start_time' => 'required',
+            'end_time' => 'required',
+            'location' => 'required|string|max:100',
+            'material_text' => 'nullable|string',
+        ]);
+
+        $schedule->update($validated);
+        return back()->with('success', 'Jadwal kegiatan berhasil diperbarui.');
     }
 
     public function scheduleDestroy(Schedule $schedule)
@@ -400,9 +419,32 @@ class AdminController extends Controller
         return back()->with('success', "Import selesai: {$imported} eskul berhasil ditambahkan" . ($skipped > 0 ? ", {$skipped} data dilewati." : '.'));
     }
 
+    public function importSchedules(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv|max:5120',
+        ]);
+
+        $import = new SchedulesImport();
+        Excel::import($import, $request->file('file'));
+
+        $imported = $import->getImportedCount();
+        $skipped = $import->getSkippedCount();
+
+        return back()->with('success', "Import selesai: {$imported} sesi jadwal berhasil ditambahkan" . ($skipped > 0 ? ", {$skipped} data dilewati (nama eskul tidak ditemukan / format tanggal tidak valid)." : '.'));
+    }
+
     // =========================================================
-    // 8. EXPORT LAPORAN ABSENSI KE EXCEL
+    // 8. EXPORT LAPORAN ABSENSI & JADWAL KE EXCEL
     // =========================================================
+    public function exportSchedules(Request $request)
+    {
+        $eskulId = $request->get('eskul_id');
+        $filename = 'Jadwal_Pertemuan_Eskul_SIBAS_' . date('Y-m-d_His') . '.xlsx';
+
+        return Excel::download(new SchedulesExport($eskulId), $filename);
+    }
+
     public function exportAttendance(Request $request)
     {
         $eskulId = $request->get('eskul_id');
